@@ -16,7 +16,7 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            title: 'Blox Path Tracer',
+            title: 'Blox',
             minify: {
                 removeComments: true,
                 collapseWhitespace: true

@@ -10,5 +10,5 @@ in vec2 vTexCoords;
 out vec4 fragColor;
 
 void main() {
-    fragColor = vec4(pow(texture(uTexture, vTexCoords).rgb, vec3(1.0 / 2.2)), 1.0);
+    fragColor = vec4(pow(texelFetch(uTexture, ivec2(gl_FragCoord.xy), 0).rgb, vec3(1.0 / 2.2)), 1.0);
 }

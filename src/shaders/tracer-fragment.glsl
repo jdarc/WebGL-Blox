@@ -8,10 +8,6 @@ precision mediump float;
 const float EPSILON = 0.0001;
 const float PI = radians(180.0);
 const float HUGE = 1000000.0;
-const float U1 = 1.0 / 256.0;
-const float U2 = 2.0 / 256.0;
-const float U3 = 3.0 / 256.0;
-const float U4 = 4.0 / 256.0;
 const float BLUR_RADIUS = 0.01;
 const vec3 BG_COLOR = vec3(0.1, 0.1, 0.2);
 
@@ -25,7 +21,6 @@ uniform float uFocalDistance;
 uniform float uWidth;
 uniform float uHeight;
 
-in vec2 vTexCoords;
 out vec4 fragColor;
 
 float seed;
@@ -33,11 +28,11 @@ float seed;
 struct Box { vec3 min; vec3 max; vec3 rgb; vec3 lit; };
 
 Box getBox(int index) {
-    float u = float(index) * U4;
-    vec3 min = texture(uSampler, vec2(u, 0.0)).rgb;
-    vec3 max = texture(uSampler, vec2(u + U1, 0.0)).rgb;
-    vec3 rgb = texture(uSampler, vec2(u + U2, 0.0)).rgb;
-    vec3 lit = texture(uSampler, vec2(u + U3, 0.0)).rgb;
+    ivec2 offset = ivec2(index << 2, 0);
+    vec3 min = texelFetch(uSampler, offset, 0).rgb;
+    vec3 max = texelFetch(uSampler, offset + ivec2(1, 0), 0).rgb;
+    vec3 rgb = texelFetch(uSampler, offset + ivec2(2, 0), 0).rgb;
+    vec3 lit = texelFetch(uSampler, offset + ivec2(3, 0), 0).rgb;
     return Box(min, max, rgb, lit);
 }
 
@@ -130,5 +125,5 @@ void main(void) {
         }
     }
 
-    fragColor = vec4(mix(color, texture(uTexture, vTexCoords).rgb, uTextureWeight), dist);
+    fragColor = vec4(mix(color, texelFetch(uTexture, ivec2(gl_FragCoord.xy), 0).rgb, uTextureWeight), dist);
 }

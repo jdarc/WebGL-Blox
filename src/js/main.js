@@ -32,9 +32,10 @@ const createProgram = (gl, vertexShader, fragmentShader) => {
 const createTexture = (gl, width, height, internalFormat, format, type, data) => {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, internalFormat, width, height);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, format, type, data);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindTexture(gl.TEXTURE_2D, null);
@@ -113,8 +114,9 @@ const run = canvas => {
             gl.deleteTexture(traceTextures[0]);
             gl.deleteTexture(traceTextures[1]);
             traceTextures.splice(0, traceTextures.length);
-            traceTextures.push(createTexture(gl, canvas.width, canvas.height, gl.RGBA32F, gl.RGBA, gl.FLOAT, null));
-            traceTextures.push(createTexture(gl, canvas.width, canvas.height, gl.RGBA32F, gl.RGBA, gl.FLOAT, null));
+            const empty = new Float32Array(canvas.width * canvas.height * 4);
+            traceTextures.push(createTexture(gl, canvas.width, canvas.height, gl.RGBA32F, gl.RGBA, gl.FLOAT, empty));
+            traceTextures.push(createTexture(gl, canvas.width, canvas.height, gl.RGBA32F, gl.RGBA, gl.FLOAT, empty));
             camera.aspectRatio = canvas.width / canvas.height;
             sampleCount = 0;
         }
